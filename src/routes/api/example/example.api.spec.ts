@@ -3,6 +3,7 @@ import * as http from 'http';
 import { getTestApp } from '../../../lib/test-setup';
 import { expect } from 'chai';
 import { getAuthorizationToken } from '../../../lib/auth-helper';
+import { exampleData } from '../../../db/data/example';
 
 describe('Site Routes', () => {
   let app: http.Server;
@@ -25,11 +26,15 @@ describe('Site Routes', () => {
     });
 
     it('should respond with site by id', async () => {
+      const result = await exampleData.create({
+        name: 'foo'
+      });
       const resp = await supertest(app)
-        .get('/api/example/1')
+        .get(`/api/example/${result.id}`)
         .set('Authorization', getAuthorizationToken())
         .expect(200);
-      expect(resp.body.data.id).to.equal('1');
+      expect(resp.body.data.id).to.equal(result.id);
+      expect(resp.body.data.name).to.equal(result.name);
     });
   });
 

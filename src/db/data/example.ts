@@ -17,9 +17,7 @@ const all = (withDeleted = false) => {
 
 const create = record => {
   filterGuarded(record, guarded);
-  return examples()
-    .returning('*')
-    .insert(record);
+  return examples().insert(record, '*');
 };
 
 const update = (id: number, record) => {
@@ -27,20 +25,22 @@ const update = (id: number, record) => {
   record.updated_at = new Date().toUTCString();
   return examples()
     .where({ id })
-    .update(record)
-    .returning('*');
+    .update(record, '*');
 };
 
 const restore = (id: number) => {
   return examples()
     .where({ id })
-    .update({
-      updated_at: new Date().toUTCString(),
-      deleted_at: null
-    });
+    .update(
+      {
+        updated_at: new Date().toUTCString(),
+        deleted_at: null
+      },
+      ['id']
+    );
 };
 
-const byId = (id: number, withDeleted = false) => {
+const getById = (id: number, withDeleted = false) => {
   const q = examples()
     .where({ id })
     .returning('*')
@@ -54,10 +54,13 @@ const byId = (id: number, withDeleted = false) => {
 const softDelete = (id: number) => {
   return examples()
     .where({ id })
-    .update({
-      updated_at: new Date().toUTCString(),
-      deleted_at: new Date().toUTCString()
-    });
+    .update(
+      {
+        updated_at: new Date().toUTCString(),
+        deleted_at: new Date().toUTCString()
+      },
+      ['id']
+    );
 };
 
 const destroy = (id: number) => {
@@ -66,9 +69,9 @@ const destroy = (id: number) => {
     .del();
 };
 
-export const sitesData = {
+export const exampleData = {
   all,
-  byId,
+  getById,
   create,
   destroy,
   restore,

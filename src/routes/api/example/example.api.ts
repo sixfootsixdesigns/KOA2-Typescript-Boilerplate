@@ -1,41 +1,42 @@
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
 import { jsonResponseBody } from '../../../lib/json-response';
-import { sitesData } from '../../../db/data/example';
+import { exampleData } from '../../../db/data/example';
+import { firstOrFail } from '../../../lib/first-or-fail';
 
 const getById = async (ctx: Koa.Context, next: () => Promise<any>) => {
-  ctx.body = jsonResponseBody({
-    id: ctx.params.id
-  });
+  const id = ctx.params.id;
+  const result = await exampleData.getById(id);
+  ctx.body = jsonResponseBody(firstOrFail(ctx, result));
 };
 
 const updateById = async (ctx: Koa.Context, next: () => Promise<any>) => {
   const record = ctx.request.body;
   const id = ctx.params.id;
-  const body = await sitesData.update(id, record);
-  ctx.body = jsonResponseBody(body);
+  const result = await exampleData.update(id, record);
+  ctx.body = jsonResponseBody(firstOrFail(ctx, result));
 };
 
 const softDelete = async (ctx: Koa.Context, next: () => Promise<any>) => {
   const id = ctx.params.id;
-  const body = await sitesData.softDelete(id);
-  ctx.body = jsonResponseBody(body);
+  const result = await exampleData.softDelete(id);
+  ctx.body = jsonResponseBody(firstOrFail(ctx, result));
 };
 
 const restore = async (ctx: Koa.Context, next: () => Promise<any>) => {
   const id = ctx.params.id;
-  const body = await sitesData.restore(id);
-  ctx.body = jsonResponseBody(body);
+  const result = await exampleData.restore(id);
+  ctx.body = jsonResponseBody(firstOrFail(ctx, result));
 };
 
 const create = async (ctx: Koa.Context, next: () => Promise<any>) => {
   const record = ctx.request.body;
-  const body = await sitesData.create(record);
+  const body = await exampleData.create(record);
   ctx.body = jsonResponseBody(body);
 };
 
 const getAll = async (ctx: Koa.Context, next: () => Promise<any>) => {
-  const body = await sitesData.all();
+  const body = await exampleData.all();
   ctx.body = jsonResponseBody(body);
 };
 
