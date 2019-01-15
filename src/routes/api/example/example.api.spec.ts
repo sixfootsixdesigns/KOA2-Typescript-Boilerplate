@@ -13,8 +13,7 @@ describe('Site Routes', () => {
 
   describe('GET /example/:id', () => {
     it('should 401 without auth', async () => {
-      const resp = await supertest(app)
-        .get('/api/example/1');
+      const resp = await supertest(app).get('/api/example/1');
       expect(resp.status).to.equal(401);
     });
 
@@ -23,7 +22,7 @@ describe('Site Routes', () => {
         .get('/api/example/1')
         .set('Authorization', getAuthorizationToken() + 'f');
       expect(resp.status).to.equal(401);
-    }); 
+    });
 
     it('should respond with site by id', async () => {
       const resp = await supertest(app)

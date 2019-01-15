@@ -6,6 +6,4 @@ const filterGuarded = (record: any, guarded = []) => {
   });
 };
 
-export {
-  filterGuarded
-}
+export { filterGuarded };

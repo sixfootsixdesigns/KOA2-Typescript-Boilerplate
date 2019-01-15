@@ -1,4 +1,4 @@
-exports.seed = async (knex) => {
+exports.seed = async knex => {
   const records = [
     {
       name: 'Test'
