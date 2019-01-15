@@ -15,7 +15,7 @@ services:
       AUTH_SECRET: $AUTH_SECRET
     depends_on:
       - db
-    command: bash -c 'while !</dev/tcp/db/5432; do echo "Waiting for Postgres to be ready"; sleep 1; done; echo "Postgres is ready - starting API app"; yarn dev'
+    command: bash -c 'while !</dev/tcp/db/5432; do echo "Waiting for Postgres to be ready"; sleep 1; done; echo "Postgres is ready - starting API app"; yarn dev:start'
   db:
     image: postgres:9-alpine
     ports:
