@@ -1,0 +1,28 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: df.api.Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - $PORT:$PORT
+    environment:
+      DATABASE_URL: postgres://user:password@db/koa-api
+      NODE_ENV: $NODE_ENV
+      AUTH_SECRET: $AUTH_SECRET
+    depends_on:
+      - db
+    command: bash -c 'while !</dev/tcp/db/5432; do echo "Waiting for Postgres to be ready"; sleep 1; done; echo "Postgres is ready - starting API app"; yarn dev'
+  db:
+    image: postgres:9-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ./.postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: koa-api
