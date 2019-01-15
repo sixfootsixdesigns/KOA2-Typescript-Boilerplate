@@ -1,5 +1,4 @@
 import * as connection from '../connect';
-import * as moment from 'moment';
 import { filterGuarded } from '../../lib/filter-guarded';
 
 const guarded = ['deleted_at', 'updated_at', 'created_at'];
@@ -25,7 +24,7 @@ const create = record => {
 
 const update = (id: number, record) => {
   filterGuarded(record, guarded);
-  record.updated_at = moment.utc().format();
+  record.updated_at = new Date().toUTCString();
   return examples()
     .where({ id })
     .update(record)
@@ -36,7 +35,7 @@ const restore = (id: number) => {
   return examples()
     .where({ id })
     .update({
-      updated_at: moment.utc().format(),
+      updated_at: new Date().toUTCString(),
       deleted_at: null
     });
 };
@@ -56,8 +55,8 @@ const softDelete = (id: number) => {
   return examples()
     .where({ id })
     .update({
-      updated_at: moment.utc().format(),
-      deleted_at: moment.utc().format()
+      updated_at: new Date().toUTCString(),
+      deleted_at: new Date().toUTCString()
     });
 };
 
