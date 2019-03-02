@@ -1,6 +1,6 @@
 import * as Koa from 'koa';
 
-const firstOrFail = (ctx: Koa.Context, result: any) => {
+export const firstOrFail = (ctx: Koa.Context, result: any) => {
   if (!result) {
     ctx.throw(404);
   }
@@ -12,5 +12,3 @@ const firstOrFail = (ctx: Koa.Context, result: any) => {
   }
   return result;
 };
-
-export { firstOrFail };

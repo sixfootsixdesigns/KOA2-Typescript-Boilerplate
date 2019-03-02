@@ -7,17 +7,9 @@ const examples = () => {
   return connection.connect()('example');
 };
 
-const all = (withDeleted = false) => {
-  const q = examples();
-  if (!withDeleted) {
-    q.whereNull('deleted_at');
-  }
-  return q;
-};
-
 const create = record => {
   filterGuarded(record, guarded);
-  return examples().insert(record, '*');
+  return examples().insert(record, ['id']);
 };
 
 const update = (id: number, record) => {
@@ -25,7 +17,7 @@ const update = (id: number, record) => {
   record.updated_at = new Date().toUTCString();
   return examples()
     .where({ id })
-    .update(record, '*');
+    .update(record, ['id']);
 };
 
 const restore = (id: number) => {
@@ -66,11 +58,10 @@ const softDelete = (id: number) => {
 const destroy = (id: number) => {
   return examples()
     .where({ id })
-    .del();
+    .del(['id']);
 };
 
 export const exampleData = {
-  all,
   getById,
   create,
   destroy,

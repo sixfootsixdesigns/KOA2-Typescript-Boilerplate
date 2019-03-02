@@ -1,5 +1,5 @@
 import * as supertest from 'supertest';
-import { getTestApp, closeApp } from '../lib/test-setup';
+import { getTestApp, closeApp } from '../helpers/test-setup';
 import * as http from 'http';
 
 describe('GET /status-check', () => {
