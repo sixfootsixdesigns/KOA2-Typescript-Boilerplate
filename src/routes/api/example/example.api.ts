@@ -32,11 +32,7 @@ const restore = async (ctx: Koa.Context, next: () => Promise<any>) => {
 const create = async (ctx: Koa.Context, next: () => Promise<any>) => {
   const record = ctx.request.body;
   const body = await exampleData.create(record);
-  ctx.body = jsonResponseBody(body);
-};
-
-const getAll = async (ctx: Koa.Context, next: () => Promise<any>) => {
-  const body = await exampleData.all();
+  ctx.status = 201;
   ctx.body = jsonResponseBody(body);
 };
 
@@ -44,7 +40,6 @@ export const initExampleRoutes = (router: Router) => {
   router.post('/example/create', create);
   router.put('/example/restore/:id', restore);
   router.put('/example/update/:id', updateById);
-  router.get('/example/get-all', getAll);
   router.get('/example/:id', getById);
   router.delete('/example/delete/:id', softDelete);
 };

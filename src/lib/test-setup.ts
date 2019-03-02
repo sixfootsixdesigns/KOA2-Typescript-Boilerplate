@@ -1,14 +1,26 @@
 import { createServer } from '../lib/server';
 import * as http from 'http';
 import { connect as connectDb, destroy } from '../db';
+let app: http.Server;
 
-const getTestApp = (): http.Server => {
-  return createServer().listen();
+const getTestApp = async (): Promise<http.Server> => {
+  if (!app) {
+    app = createServer().listen();
+    initializeDB();
+  }
+  return app;
 };
 
-const initializeDB = async () => {
-  const connection = connectDb();
-  await connection.migrate.latest();
+const closeApp = async () => {
+  await closeDB();
+  if (app) {
+    app.close();
+  }
+  app = null;
+};
+
+const initializeDB = () => {
+  connectDb();
 };
 
 const closeDB = async () => {
@@ -17,4 +29,4 @@ const closeDB = async () => {
   await destroy();
 };
 
-export { getTestApp, initializeDB, closeDB };
+export { getTestApp, closeApp };

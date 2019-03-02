@@ -1,1 +1,4 @@
+--require src/test.common.js
 --require ts-node/register
+--watch-extensions ts
+--timeout 5000

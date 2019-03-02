@@ -3,13 +3,15 @@ import * as http from 'http';
 import * as Koa from 'koa';
 import * as koa404Handler from 'koa-404-handler';
 import * as errorHandler from 'koa-better-error-handler';
-import * as bodyParser from 'koa-bodyparser';
+import * as bodyParser from 'koa-body';
 import * as compress from 'koa-compress';
 import * as helmet from 'koa-helmet';
 import * as Router from 'koa-router';
 import { corsRules } from '../middleware/cors';
 import { initRoutes } from '../routes';
 import * as jwt from 'koa-jwt';
+import { logger } from '../middleware/logger';
+import * as winston from 'winston';
 
 export const createServer = (): http.Server => {
   const app = new Koa();
@@ -33,6 +35,8 @@ export const createServer = (): http.Server => {
         origin: corsRules
       })
     )
+
+    .use(logger(winston))
 
     // handle JWT (you can access the payload from ctx.state.user )
     .use(
