@@ -1,0 +1,21 @@
+{
+  "name": "koa-api",
+  "scripts": {},
+  "env": {
+    "AUTH_SECRET": { "required": true },
+    "DATABASE_URL": { "required": true },
+    "DB_POOL_MAX": { "required": false },
+    "DB_POOL_MIN": { "required": false },
+    "DEBUG_LOGGING": { "required": false },
+    "NODE_ENV": { "required": true },
+    "NPM_TOKEN": { "required": true },
+    "PGSSLMODE": { "required": true }
+  },
+  "formation": {
+    "web": { "quantity": 1 }
+  },
+  "addons": [],
+  "buildpacks": [{
+    "url": "heroku/nodejs"
+  }]
+}

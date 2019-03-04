@@ -1,9 +1,11 @@
-# Koa 2 API
-
+# Koa 2 Typescript API
+- Heroku
+- CircleCI
 - KOA2
 - Typescript
 - Docker
 - Knex
+- JWT Auth
 - Mocha
 - Supertest
 - Chai

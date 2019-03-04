@@ -1,0 +1,60 @@
+version: 2
+jobs:
+    continuous-integration:
+        working_directory: ~/koa_api
+        docker:
+        - image: circleci/node:10.11.0
+          environment:
+            AUTH_SECRET: shhh
+            NODE_ENV: test
+            DATABASE_URL: postgres://postgres:@localhost:5432/test
+        - image: postgres:9-alpine
+          environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: ""
+            POSTGRES_DB: test
+        steps:
+            - checkout
+            - run:
+                name: Wait for db
+                command: dockerize -wait tcp://localhost:5432 -timeout 1m
+            - run: yarn install
+            - run: yarn build
+            - run: yarn db:migrate
+            - run: yarn lint
+            - run: yarn test
+
+    deploy-production:
+        working_directory: ~/koa_api
+        docker:
+            - image: circleci/node:10.11.0
+        steps:
+            - checkout
+            - run: 
+                name: NPM
+                command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+            - run:
+                name: Setup Heroku
+                command: bash scripts/setup-heroku.sh
+            - run:
+                name: Deploy production
+                command: git push heroku-production master
+
+workflows:
+    version: 2
+    branches:
+        jobs:
+            - continuous-integration:
+                filters:
+                    branches:
+                        ignore: master
+    master:
+        jobs:
+            - continuous-integration:
+                filters:
+                    branches:
+                        only: master
+            - deploy-production:
+                requires:
+                    - continuous-integration
+                    

@@ -68,7 +68,9 @@ describe('/api/example/', () => {
     });
 
     it('should 401 without auth', async () => {
-      const resp = await supertest(app).put(`/api/example/restore/${record.id}`);
+      const resp = await supertest(app).put(
+        `/api/example/restore/${record.id}`
+      );
       expect(resp.status).to.equal(401);
     });
 
@@ -92,7 +94,7 @@ describe('/api/example/', () => {
         .set('Authorization', getAuthorizationToken())
         .expect(200);
       expect(resp.body.data.id).to.equal(record.id);
-      
+
       const data = await exampleData.getById(record.id);
       expect(data.deleted_at).to.equal(null);
     });
@@ -112,7 +114,7 @@ describe('/api/example/', () => {
         .put(`/api/example/update/${record.id}`)
         .send({
           name: 'bar'
-        })
+        });
       expect(resp.status).to.equal(401);
     });
 
@@ -157,7 +159,7 @@ describe('/api/example/', () => {
         .post(`/api/example/create`)
         .send({
           name: 'bar'
-        })
+        });
       expect(resp.status).to.equal(401);
     });
 
@@ -193,8 +195,9 @@ describe('/api/example/', () => {
     });
 
     it('should 401 without auth', async () => {
-      const resp = await supertest(app)
-        .delete(`/api/example/soft-delete/${record.id}`)
+      const resp = await supertest(app).delete(
+        `/api/example/soft-delete/${record.id}`
+      );
       expect(resp.status).to.equal(401);
     });
 
