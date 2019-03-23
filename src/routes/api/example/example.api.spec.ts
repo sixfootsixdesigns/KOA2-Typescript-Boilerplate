@@ -48,7 +48,7 @@ describe('/api/example/', () => {
         .expect(404);
     });
 
-    it('should respond with site by id', async () => {
+    it('should respond with id', async () => {
       const resp = await supertest(app)
         .get(`/api/example/${record.id}`)
         .set('Authorization', getAuthorizationToken())

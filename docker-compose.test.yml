@@ -16,7 +16,7 @@ services:
       AUTH_SECRET: $AUTH_SECRET
     depends_on:
       - testdb
-    command: bash -c 'while !</dev/tcp/testdb/5432; do echo "Waiting for Postgres"; sleep 1; done; yarn test:watch'
+    command: bash -c 'while !</dev/tcp/testdb/5432; do echo "Waiting for Postgres"; sleep 1; done; yarn db:migrate; yarn test:watch'
   testdb:
     image: postgres:9-alpine
     tmpfs: /var/lib/postgresql/data
