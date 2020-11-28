@@ -1,44 +1,71 @@
+import * as Winston from 'winston';
 import * as Koa from 'koa';
-import * as winston from 'winston';
+import { LogLevel, RollbarTransport } from '../lib/rollbarTransport';
+import { Environment } from '../lib/environment';
 
-export const logger = winstonInstance => {
-  return async (ctx: Koa.Context, next: () => Promise<any>) => {
-    const start = new Date().getMilliseconds();
+const transports: any = [new Winston.transports.Console()];
+
+if (Environment.rollbarAccessToken()) {
+  transports.push(
+    new RollbarTransport({
+      rollbarConfig: {
+        environment: Environment.rollbarEnvironment(),
+        accessToken: Environment.rollbarAccessToken(),
+      },
+    })
+  );
+}
+
+export const koaLogger = (winstonInstance: typeof Winston) => {
+  winstonInstance.configure({
+    format: Winston.format.combine(Winston.format.json()),
+    transports,
+  });
+
+  return async (ctx: Koa.Context | any, next: () => Promise<any>) => {
+    const start = new Date().getTime();
 
     await next();
 
-    const ms = new Date().getMilliseconds() - start;
+    const ms = new Date().getTime() - start;
 
-    let logLevel: string;
+    let logLevel: LogLevel;
     if (ctx.status >= 500) {
       logLevel = 'error';
-    }
-    if (ctx.status >= 400) {
+    } else if (ctx.status >= 400) {
       logLevel = 'warn';
-    }
-    if (ctx.status >= 100) {
+    } else if (ctx.status >= 100) {
       logLevel = 'info';
     }
 
-    const msg: string = `${ctx.method} ${ctx.originalUrl} ${
-      ctx.status
-    } ${ms}ms`;
+    const msg = {
+      req: {
+        headers: ctx.request.header,
+        url: ctx.request.url,
+        originalUrl: ctx.originalUrl,
+        method: ctx.request.method,
+        params: ctx.params,
+        query: ctx.querystring,
+        body: ctx.request.body,
+      },
+      res: {
+        statusCode: ctx.response.status,
+        message: ctx.response.message,
+      },
+      level: logLevel,
+      startedAt: start,
+      responseTime: ms,
+    };
 
-    winstonInstance.configure({
-      level: process.env.DEBUG_LOGGING ? 'debug' : 'info',
-      transports: [
-        // - Write all logs error (and below) to `error.log`.
-        new winston.transports.File({ filename: 'error.log', level: 'error' }),
-        // - Write to all logs with specified level to console.
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple()
-          )
-        })
-      ]
-    });
-
-    winstonInstance.log(logLevel, msg);
+    if (Environment.debugApp()) {
+      winstonInstance.log(logLevel, JSON.stringify(msg));
+    } else if (Environment.rollbarLogLevels().includes(logLevel)) {
+      winstonInstance.log(logLevel, JSON.stringify(msg));
+    }
   };
 };
+
+export const logger = Winston.createLogger({
+  format: Winston.format.combine(Winston.format.json()),
+  transports,
+});

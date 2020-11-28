@@ -1,3 +1,0 @@
---require src/test.init.js
---require ts-node/register
---watch-extensions ts

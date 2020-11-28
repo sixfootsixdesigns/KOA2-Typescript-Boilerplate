@@ -1,50 +1,80 @@
-# Koa 2 Typescript API
-- Heroku
-- CircleCI
+# Koa 2 Typescript API on HEROKU
+
 - KOA2
 - Typescript
-- Docker
-- Knex
+- TypeORM
 - Postgres
-- JWT Auth
-- Mocha
+- JWT Auth via JWKS
+- Rollbar
+- Jest
+- Prettier
+- ESLint
 - Supertest
-- Chai
+- Heroku
+- Github Actions
 
-## Configuring
-- first you need to run `cp .env.exampl .env`
+## Running The App Locally
+
+- first you need to run `cp .env.example .env`
+- Update your env with correct values
 - next run `yarn`
+- create a local postgres database called `example_api_test` and `example_api`
+- run `yarn serve`
 
-## Running Locally
-- make sure you have docker installed
-- run `yarn dev:docker`
+## Running Jest Tests
 
-## Running Tests
-- make sure you have docker installed
-- run `yarn test:docker`
+- `yarn test`
+- `yarn test:coverage` // with test coverage
 
-## Running Lint
-- run `yarn lint`
+## Running ESLint
+
+- `yarn lint`
 
 ## Running Prettier
-- run `yarn format`
+
+- `yarn format`
 
 ## Configuring Heroku
+
 - Login to your Heroku account and create and app and pipeline for your project.
 - Add a `Heroku Postgres` db to your app.
 - Under the `deploy` tab, Link up your github repo for the app and enable automatic deploys.
 - Under the `settings` tab open the `environment variables`. The `app.json` file in the project defines
-what variables are required by your app. Some of them should be set to the following:
+  what variables are required by your app. Some of them should be set to the following:
+
 ```
-DB_POOL_MAX = 5
-DB_POOL_MIN = 2
-NODE_ENV = production
-PGSSLMODE = require
+ADDITIONAL_ORIGINS
+AUTH_AUDIENCE
+AUTH_DOMAIN
+AUTH_ISSUER
+NODE_ENV='production'
+ROLLBAR_ACCESS_TOKEN
+ROLLBAR_ENVIRONMENT
 ```
+
+## Configuring Rollbar
+
+Create a rollbar account and get your tokens.
+Create an env for `ROLLBAR_ACCESS_TOKEN` containing your token
+Create an env for `ROLLBAR_ENVIRONMENT` containing your environment (production, staging, local. etc...)
+If you want you can change what gets sent to rollbar by setting the env `ROLLBAR_LOG_LEVELS` it is a comma separated list of levels.
+
+## Configuring Auth
+
+Create an Auth0 account and then create an auth0 api.
+Create an env `AUTH_ISSUER` which should be your issuer from your auth 0 api
+Create an env `AUTH_AUDIENCE` which should be the audience from your auth 0 api
+Create an env `AUTH_DOMAIN` which is the path to your auth0 jwks endpoint.
+
+## Configuring CORS
+
+You can add any origins you would like using the env `ADDITIONAL_ORIGINS`. This is comma separated.
+You can also create dynamic domains using a regex by setting the `dynamicOrigins` variable in `src/middleware/corsRules.ts`
+
+## Configuring TypeORM
+
+The typeorm db is configured via the `ormconfig.js` file. You should mostly be able to leave this alone other than maybe renaming the db names.
 
 ## Configuring Continuous Delivery
-This app is setup so CircleCI deploys to production if all tests passs. To allow this, you need to do some configuration to the `scripts/setup-heroku.sh`. Once you have setup your heroku app you need to update the `scripts/setup-heroku.sh` file and replace `koa-api` with whatever your app is named in heroku.
 
-On `CircleCI` you need to also setup some environment variables: 
-`HEROKU_LOGIN_NAME`: the login email for your heroku account
-`HEROKU_API_KEY`: the api key you get from heroku to allow circleci access
+This app is setup to use github Actions. There is a workflow file called `ci.yaml` in `.github/workflows`. You can configure `heroku` to deploy if the ci passes

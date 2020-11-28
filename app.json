@@ -1,21 +1,24 @@
 {
-  "name": "koa-api",
-  "scripts": {},
+  "name": "api",
   "env": {
-    "AUTH_SECRET": { "required": true },
-    "DATABASE_URL": { "required": true },
-    "DB_POOL_MAX": { "required": false },
-    "DB_POOL_MIN": { "required": false },
-    "DEBUG_LOGGING": { "required": false },
-    "NODE_ENV": { "required": true },
-    "NPM_TOKEN": { "required": true },
-    "PGSSLMODE": { "required": true }
+    "ADDITIONAL_ORIGINS": { "required": false },
+    "AUTH_AUDIENCE": { "required": true },
+    "AUTH_DOMAIN": { "required": true },
+    "AUTH_ISSUER": { "required": true },
+    "DEBUG_APP": { "required": false },
+    "ROLLBAR_ACCESS_TOKEN": { "required": false },
+    "ROLLBAR_ENVIRONMENT": { "required": false },
+    "ROLLBAR_LOG_LEVELS": { "required": false }
   },
   "formation": {
-    "web": { "quantity": 1 }
+    "web": {
+      "quantity": 1
+    }
   },
-  "addons": [],
-  "buildpacks": [{
-    "url": "heroku/nodejs"
-  }]
+  "addons": ["heroku-postgresql"],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
 }

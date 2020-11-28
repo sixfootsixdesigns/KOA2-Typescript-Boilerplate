@@ -1,21 +1,26 @@
-// import env first so process.env is available in the rest of the app
-import './lib/env';
-import { connect as connectDb } from './db';
-import { createServer } from './lib/server';
+import * as bodyParser from 'koa-bodyparser';
+import * as cors from '@koa/cors';
+import * as Koa from 'koa';
+import * as helmet from 'koa-helmet';
+import { corsRules } from './middleware/corsRules';
+import { koaLogger } from './middleware/logger';
+import * as winston from 'winston';
+import { errorHandler } from './middleware/errorHandler';
+import { healthCheckRouter } from './routes/healthCheck';
+import { apiRouter } from './routes/api/api.routes';
+import { welcomeRouter } from './routes/welcome.routes';
 
-try {
-  createServer().listen(process.env.PORT, () => {
-    const mode = process.env.NODE_ENV || 'development';
-    console.log(`Server listening on ${process.env.PORT} in ${mode} mode`);
-  });
+export const createApp = (): Koa<Koa.DefaultState, Koa.DefaultContext> => {
+  const app = new Koa();
 
-  // connect to db
-  try {
-    connectDb();
-  } catch (ex) {
-    console.log('db connection error');
-  }
-} catch (err) {
-  console.error('Error while starting up server', err);
-  process.exit(1);
-}
+  app.use(koaLogger(winston));
+  app.use(helmet());
+  app.use(errorHandler);
+  app.use(cors(corsRules));
+  app.use(bodyParser());
+  app.use(welcomeRouter.routes()).use(welcomeRouter.allowedMethods());
+  app.use(healthCheckRouter.routes()).use(healthCheckRouter.allowedMethods());
+  app.use(apiRouter.routes()).use(apiRouter.allowedMethods());
+
+  return app;
+};
