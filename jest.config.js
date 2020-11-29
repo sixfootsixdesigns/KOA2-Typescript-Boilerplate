@@ -12,7 +12,7 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/src/migration',
-    'src/lib/environment.ts',
+    '/src/config.ts',
     '/src/testHelpers',
     '/src/index.ts',
     '/src/lib/rollbarTransport.ts',

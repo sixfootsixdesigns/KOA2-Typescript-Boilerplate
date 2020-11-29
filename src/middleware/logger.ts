@@ -1,16 +1,16 @@
 import * as Winston from 'winston';
 import * as Koa from 'koa';
 import { LogLevel, RollbarTransport } from '../lib/rollbarTransport';
-import { Environment } from '../lib/environment';
+import { Config } from '../config';
 
-const transports: any = [new Winston.transports.Console()];
+const transports: Winston.transport[] = [new Winston.transports.Console()];
 
-if (Environment.rollbarAccessToken()) {
+if (Config.rollbarAccessToken()) {
   transports.push(
     new RollbarTransport({
       rollbarConfig: {
-        environment: Environment.rollbarEnvironment(),
-        accessToken: Environment.rollbarAccessToken(),
+        environment: Config.rollbarEnvironment(),
+        accessToken: Config.rollbarAccessToken(),
       },
     })
   );
@@ -57,9 +57,12 @@ export const koaLogger = (winstonInstance: typeof Winston) => {
       responseTime: ms,
     };
 
-    if (Environment.debugApp()) {
+    if (Config.debugApp()) {
       winstonInstance.log(logLevel, JSON.stringify(msg));
-    } else if (Environment.rollbarLogLevels().includes(logLevel)) {
+    } else if (
+      !Config.ignoreStatusCodes().includes(ctx.status) &&
+      Config.rollbarLogLevels().includes(logLevel)
+    ) {
       winstonInstance.log(logLevel, JSON.stringify(msg));
     }
   };

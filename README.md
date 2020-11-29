@@ -43,7 +43,7 @@
   what variables are required by your app. Some of them should be set to the following:
 
 ```
-ADDITIONAL_ORIGINS
+ALLOWED_ORIGINS
 AUTH_AUDIENCE
 AUTH_DOMAIN
 AUTH_ISSUER
@@ -68,8 +68,8 @@ Create an env `AUTH_DOMAIN` which is the path to your auth0 jwks endpoint.
 
 ## Configuring CORS
 
-You can add any origins you would like using the env `ADDITIONAL_ORIGINS`. This is comma separated.
-You can also create dynamic domains using a regex by setting the `dynamicOrigins` variable in `src/middleware/corsRules.ts`
+You can add any origins you would like using the env `ALLOWED_ORIGINS`. This is comma separated.
+You can also create dynamic domains using a regex by setting the `getDynamicOrigins` variable in `src/config.ts`
 
 ## Configuring TypeORM
 

@@ -1,15 +1,15 @@
 import * as jwksRsa from 'jwks-rsa';
 import * as jwt from 'koa-jwt';
-import { Environment } from '../lib/environment';
+import { Config } from '../config';
 
 export const checkJwt = jwt({
   secret: jwksRsa.koaJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: Environment.authJwksUri(),
+    jwksUri: Config.authJwksUri(),
   }),
-  issuer: Environment.authIssuers(),
-  audience: Environment.authAudience(),
+  issuer: Config.authIssuers(),
+  audience: Config.authAudience(),
   algorithms: ['RS256'],
 });

@@ -1,12 +1,9 @@
 import * as cors from '@koa/cors';
 import { unauthorized } from '@hapi/boom';
-import { Environment } from '../lib/environment';
-
-// you can put in regexes here: IE: /^https:\/\/[a-zA-Z-]*.yoursite.com$/
-const dynamicOrigins: RegExp[] = [];
+import { Config } from '../config';
 
 export const isAllowedCorsOrigin = (origin: string) => {
-  const additionalOrigins = Environment.getAdditionalOrigins()
+  const additionalOrigins = Config.allowedOrigins()
     .filter((o) => {
       if (!o || o === '') {
         return false;
@@ -14,7 +11,8 @@ export const isAllowedCorsOrigin = (origin: string) => {
       return true;
     })
     .map((v) => v.trim());
-  const dynamicPass = origin && dynamicOrigins.some((domain) => origin.match(domain) !== null);
+  const dynamicPass =
+    origin && Config.dynamicOrigins().some((domain) => origin.match(domain) !== null);
   if (origin === undefined || dynamicPass || additionalOrigins.includes(origin)) {
     return true;
   }
